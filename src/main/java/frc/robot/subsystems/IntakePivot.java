@@ -3,6 +3,9 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
+// Intake Pivot 1 Kraken x60
+//2.85714285714:1
+
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Amps;
@@ -42,7 +45,7 @@ import frc.robot.generated.TunerConstants;
 import yams.mechanisms.SmartMechanism;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class IntakePivotS extends SubsystemBase {
+public class IntakePivot extends SubsystemBase {
   public class intakeConstants {
     public static final Distance OFFSET_X = Inches.of(5.6);
     public static final Distance OFFSET_Y = Inches.of(0);
@@ -65,7 +68,7 @@ public class IntakePivotS extends SubsystemBase {
     public static final double KA = 0;
     public static final double VELOCITY = 458;
     public static final double ACCELERATION = 688;
-    public static final int MOTOR_ID = 40;
+    public static final int MOTOR_ID = 9;
     public static final double STATOR_CURRENT_LIMIT = 120;
     public static final double MOI = 0.0855457256;
     public static Angle L1_ANGLE;

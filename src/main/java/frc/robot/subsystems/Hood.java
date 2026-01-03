@@ -1,0 +1,119 @@
+
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+// Hood (Pivot) subsystem:
+// Falcon500 at 36.5384:1
+
+package frc.robot.subsystems;
+
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.LinearAcceleration;
+import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import yams.mechanisms.config.ArmConfig;
+import yams.mechanisms.config.MechanismPositionConfig;
+import yams.mechanisms.config.FlyWheelConfig;
+import yams.mechanisms.velocity.FlyWheel;
+import yams.mechanisms.positional.Arm;
+import yams.motorcontrollers.SmartMotorController;
+import yams.motorcontrollers.SmartMotorControllerConfig;
+import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
+import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
+import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
+
+import com.ctre.phoenix6.hardware.TalonFX;
+import frc.robot.generated.TunerConstants;
+import yams.gearing.GearBox;
+import yams.gearing.MechanismGearing;
+import yams.mechanisms.SmartMechanism;
+import yams.motorcontrollers.remote.TalonFXWrapper;
+
+public class Hood extends SubsystemBase {
+  public class rollerConstants {
+    public static final int MOTOR_ID = 10;
+    public static final Voltage ALG_VOLTAGE_IN = Volts.of(-2);
+    public static final Voltage ALG_VOLTAGE_OUT = Volts.of(2);
+    public static final Voltage COR_VOLTAGE_OUT = Volts.of(-2);
+    public static final Voltage COR_VOLTAGE_OUT_STACK = Volts.of(-4);
+    public static final Current STATOR_CURRENT_LIMIT = Amps.of(60);
+  }
+
+  private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
+      .withControlMode(ControlMode.CLOSED_LOOP)
+      .withClosedLoopController(50, 0, 0, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
+      .withSimClosedLoopController(50, 0, 0, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
+      // Feedforward Constants
+      .withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
+      .withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
+      // Telemetry name and verbosity level
+      .withTelemetry("RollerMotor", TelemetryVerbosity.HIGH)
+      // Gearing from the motor rotor to final shaft.
+      // In this example gearbox(3,4) is the same as gearbox("3:1","4:1") which
+      // corresponds to the gearbox attached to your motor.
+      .withGearing(new MechanismGearing(GearBox.fromReductionStages(4,1)))
+      .withMotorInverted(false)
+      .withIdleMode(MotorMode.BRAKE)
+      .withStatorCurrentLimit(rollerConstants.STATOR_CURRENT_LIMIT);
+
+  // Vendor motor controller object
+  private TalonFX rollerMotor = new TalonFX(rollerConstants.MOTOR_ID);
+
+  // Create our SmartMotorController from our Spark and config with the NEO.
+  private SmartMotorController rollerSMC = new TalonFXWrapper(rollerMotor, DCMotor.getFalcon500(1), smcConfig);
+
+  private FlyWheelConfig rollerConfig = new FlyWheelConfig(rollerSMC)
+      .withDiameter(Inches.of(2))
+      .withMass(Pounds.of(1.05))
+      .withTelemetry("RollerMech", TelemetryVerbosity.HIGH);
+
+
+  // Arm Mechanism
+  private FlyWheel roller = new FlyWheel(rollerConfig);
+
+
+  public Command sysId() {
+    return roller.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
+  }
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+    roller.updateTelemetry();
+
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    // This method will be called once per scheduler run during simulation
+    roller.simIterate();
+  }
+  public AngularVelocity getVelocity() {
+    return roller.getSpeed();
+  }
+  public Command setVoltage(Voltage volts) {
+    return run(() -> rollerMotor.setVoltage(volts.in(Volts)));
+  }
+}

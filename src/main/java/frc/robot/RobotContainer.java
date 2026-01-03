@@ -35,7 +35,7 @@ import choreo.auto.AutoFactory;
 import frc.robot.Autos;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.IntakePivotS;
+import frc.robot.subsystems.IntakePivot;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -57,7 +57,7 @@ public class RobotContainer {
 
     // public final IntakePivotS intakePivot = new IntakePivotS();
 
-    public final IntakePivotS yIntakePivot = new IntakePivotS();
+    public final IntakePivot yIntakePivot = new IntakePivot();
 
     private final AutoFactory autoFactory;
     private Mechanism2d VISUALIZER;

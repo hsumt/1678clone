@@ -59,17 +59,17 @@ import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.IntakePivotS;
-import frc.robot.subsystems.IntakePivotS.intakeConstants;
+import frc.robot.subsystems.IntakePivot;
+import frc.robot.subsystems.IntakePivot.intakeConstants;
 
 public class Autos {
     private final AutoFactory m_factory;
     private final RobotContainer m_container;
     protected final CommandSwerveDrivetrain m_drivebase;
-    protected final IntakePivotS m_intakepiv;
+    protected final IntakePivot m_intakepiv;
     private final double SCORE_WAIT = 0.875;
 
-    public Autos(CommandSwerveDrivetrain drivebase, IntakePivotS intakepiv,
+    public Autos(CommandSwerveDrivetrain drivebase, IntakePivot intakepiv,
             AutoFactory factory, RobotContainer container) {
         m_drivebase = drivebase; // need
         m_intakepiv = intakepiv;
